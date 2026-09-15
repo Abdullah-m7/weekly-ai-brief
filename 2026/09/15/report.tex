@@ -1,0 +1,373 @@
+%==============================================================================
+%  WEEKLY AI BRIEF -- issue #04, window 9-15 September 2026
+%  Engine: tectonic (also compiles with pdflatex/latexmk)
+%==============================================================================
+\documentclass[11pt,a4paper]{article}
+
+%------------------------------ packages -------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.2cm,top=2.0cm,bottom=2.3cm]{geometry}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tcolorbox}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+
+\tcbuselibrary{skins,breakable}
+
+% Logos live in template/ and are shared by every issue -- never copy them into a
+% dated folder. This path list resolves them from <YYYY/MM/DD>/ or from template/.
+\graphicspath{{../../../template/}{../template/}{./}{template/}}
+
+%------------------------------ palette --------------------------------------
+\definecolor{brandink}{HTML}{103868}    % KAUST navy -- headings, rules
+\definecolor{brandaccent}{HTML}{0B7480} % KAUST teal (darkened to 5.6:1 on white)
+\definecolor{brandsoft}{HTML}{EAF3F5}   % box fills
+\definecolor{brandgrey}{HTML}{5A6672}   % meta text
+
+\hypersetup{colorlinks=true,linkcolor=brandaccent,urlcolor=brandaccent,
+            citecolor=brandaccent,pdfborder={0 0 0}}
+
+%------------------------------ metadata -------------------------------------
+\newcommand{\briefnumber}{04}
+\newcommand{\briefweek}{9--15 September 2026}
+\newcommand{\briefdate}{15 September 2026}
+\newcommand{\briefauthor}{Ali Habibullah}
+\newcommand{\briefaffil}{KAUST}
+\newcommand{\briefscope}{Papers, model releases, benchmarks and policy from the past seven days}
+
+%------------------------------ section styling ------------------------------
+\titleformat{\section}
+  {\normalfont\sffamily\large\bfseries\color{brandink}}{\thesection.}{0.6em}{}
+  [\vspace{-0.55em}{\color{brandaccent}\rule{\textwidth}{0.9pt}}]
+\titlespacing*{\section}{0pt}{1.5ex plus .3ex}{0.9ex}
+
+\titleformat{\subsection}[runin]
+  {\normalfont\sffamily\bfseries\color{brandink}}{}{0pt}{}[\;---]
+\titlespacing*{\subsection}{0pt}{1.25ex plus .2ex}{0.5em}
+
+\setlist[itemize]{leftmargin=1.15em,itemsep=0.25em,topsep=0.35em,parsep=0pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+
+%------------------------------ header / footer ------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[L]{\footnotesize\color{brandgrey}Weekly AI Brief \#\briefnumber\ \textbullet\ \briefweek}
+\fancyfoot[R]{\footnotesize\color{brandgrey}Page \thepage\ of \pageref{LastPage}}
+
+%------------------------------ content macros -------------------------------
+\newcommand{\tldr}[1]{%
+  \begin{tcolorbox}[breakable,enhanced,colback=brandsoft,colframe=brandaccent,
+      boxrule=0.8pt,left=10pt,right=10pt,top=8pt,bottom=8pt,arc=2pt,
+      title={\sffamily\bfseries The week in five lines},fonttitle=\color{white}]
+    \begin{itemize}[leftmargin=1.1em,itemsep=0.3em,topsep=0pt]#1\end{itemize}
+  \end{tcolorbox}}
+
+\newcommand{\entry}[4]{%
+  \par\vspace{0.7em}%
+  \Needspace*{5\baselineskip}%
+  {\sffamily\bfseries\color{brandink}#1}\par
+  {\footnotesize\color{brandgrey}#2 \textbullet\ \href{#3}{link} \textbullet\ \srcref{#4}}\par
+  \vspace{0.15em}}
+
+\newcommand{\why}[1]{\par{\small\textbf{Why it matters.} #1}\par}
+
+\newcommand{\srcref}[1]{\textcolor{brandaccent}{[S#1]}}
+
+\newcommand{\stat}[2]{{\sffamily\bfseries\color{brandink}#1}~{\footnotesize\color{brandgrey}#2}}
+
+%==============================================================================
+\begin{document}
+
+%------------------------------ title block ----------------------------------
+\noindent
+\begin{minipage}[c]{0.48\textwidth}
+  \raggedright\includegraphics[height=1.4cm]{KAUST_Academy_Logo.png}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.48\textwidth}
+  \raggedleft\includegraphics[height=1.5cm]{KAUST_Logo.png}
+\end{minipage}
+\vspace{0.7em}
+
+{\sffamily
+ {\color{brandgrey}\footnotesize ISSUE \#\briefnumber\ \textbullet\ \briefdate}\par
+ \vspace{0.15em}
+ {\LARGE\bfseries\color{brandink}Weekly AI Brief}\par
+ \vspace{0.25em}
+ {\large\color{brandaccent}\briefweek}\par
+ \vspace{0.35em}
+ {\footnotesize\color{brandgrey}\briefscope\\
+  Prepared by \briefauthor, \briefaffil}\par}
+\vspace{0.3em}
+{\color{brandink}\rule{\textwidth}{1.4pt}}
+\vspace{0.6em}
+
+%------------------------------ 1. executive summary -------------------------
+\tldr{
+  \item \textbf{OpenAI says an internal model produced a finite-time blowup proof for
+        forced Navier--Stokes} --- 166 pages plus a Lean formalization, from roughly 10{,}000
+        agents in 88 hours. The Clay Institute says the problem has ``apparently been
+        settled'' and that its review is ``deliberately unhurried''; a priority dispute with
+        two mathematicians is unresolved. \srcref{1}\,\srcref{5}
+  \item \textbf{DeepSeek-V4.1-Flash ships under MIT}: 552B-parameter MoE with 8B/16B active,
+        1M context, \$0.30 in / \$1.20 out per million at peak. Artificial Analysis scores it
+        40 on its index, five points above the previous Flash. \srcref{7}\,\srcref{9}
+  \item \textbf{OpenAI turns its harness into products}: GPT-Live-1 reaches the API at
+        \$0.05 per minute, and the Agents API opens in public beta with no fee beyond
+        tokens. \srcref{11}\,\srcref{12}
+  \item \textbf{An open recipe for IMO gold}: Nemotron checkpoints score 30 of 42 at IMO
+        2026 in natural language, with training data, code and a 200-problem benchmark
+        released. \srcref{14}
+  \item \textbf{Anthropic's threat report covers seven harm domains} over nine months; none
+        of the cases used Fable- or Mythos-class models, except one illicit
+        distillation. \srcref{17}
+}
+
+%------------------------------ 2. the story of the week ---------------------
+\section{The Navier--Stokes claim, and the dispute around it}
+
+Three documents landed within four days and none of them settles the question of who did
+what first. The OpenAI announcement is dated 8 September --- one day before this window
+--- and is carried here because issue \#03 closed before it appeared, because OpenAI
+amended it on 10 September, and because the Clay Institute answered on 11 September.
+
+\entry{OpenAI: ``Finite time blowup for Navier--Stokes''}{OpenAI \textbullet\ 8 September, updated 10 September}{https://openai.com/index/navier-stokes-solution/}{1}
+OpenAI states that an internal model ``significantly more capable than GPT-6 Astra'' produced
+a proof that a three-dimensional incompressible fluid, starting from rest under a smooth,
+compactly supported force, develops unbounded velocity in finite time while its kinetic
+energy stays bounded --- statements ``C'' and ``D'' of the official Clay formulation, i.e.\ the
+\emph{forced} blowup route, not the unforced regularity question. The write-up is
+\textbf{166 pages} \srcref{2} and a Lean formalization is on GitHub. By OpenAI's account the
+effort began on 1 September after rumours that two Millennium problems had fallen; a group
+``on the order of 10{,}000 concurrent agents'' reached the result on 5 September, 88 hours
+after launch, Lean verification took a further 17 hours ``via GPT-6 Astra'', and the
+Navier--Stokes run alone used 2.7 million agent messages and about 130 billion output
+tokens. A separate group of ``nearly 100 agents'' produced an unforced Euler blowup in about
+50 hours. OpenAI says it does not intend to claim the prize. The 10 September update adds
+that an internal investigation found the Codex prompts of Tristan Buckmaster ``could not have
+influenced the system in any way, including through training''.
+\why{Whatever the review concludes, the resource figures are the first public accounting
+of what a frontier-scale multi-agent mathematics run costs in messages and tokens.}
+
+\entry{Buckmaster and Alp\"oge: Euler blowup with smooth forcing, and a statement}{Buckmaster, T. (NYU) and Alp\"oge, L. (Anthropic) \textbullet\ 8 September}{https://cims.nyu.edu/~tristanb/statement.pdf}{3}
+The same day, Buckmaster and Alp\"oge released three Lean-verified results --- finite-time
+blowup with smooth forcing for incompressible porous media, 2D Boussinesq and 3D
+incompressible Euler; the Euler paper runs to \textbf{112 pages} \srcref{4}. Buckmaster
+credits the underlying program to Diego C\'ordoba and Luis Mart\'inez-Zoroa, dates the Euler
+and Boussinesq results to 15 August with Lean verification on 22 August, and says the pair
+used ``Anthropic's Claude, OpenAI's Codex, especially with GPT-5.6 Sol and, more recently,
+Astra''. His statement then recounts a 3 September email to OpenAI and two 6 September calls
+with S\'ebastien Bubeck in which he was told OpenAI's model had a roughly 100-page forced
+Navier--Stokes proof, and was offered a sequenced joint release or sole authorship of a
+paper on OpenAI's result without Alp\"oge. He declined both. He also writes: ``I have not seen
+OpenAI's proof \ldots I am not accusing anyone of anything. I am stating what I was told,
+when, and what was proposed to me.''
+\why{Two AI-assisted proof programs converged on the same forced-blowup route within
+days of each other, and the record of who prompted what, and when, is now part of the
+mathematics.}
+
+\entry{Clay Mathematics Institute statement}{CMI \textbullet\ 11 September}{https://www.claymath.org/news/navier-stokes-announcement/}{5}
+The Institute ``shares in the excitement \ldots as we contemplate the announcement that the
+Navier--Stokes problem has apparently been settled'', names no author, and says the rules
+``describe the process for evaluating what has been achieved and for assigning credit. The
+process is deliberately unhurried, but we will provide updates.'' None of the sources read for
+this issue records an independent mathematician endorsing the OpenAI proof; the Lean
+artifact is the only verification on record.
+\why{``Apparently settled'' from the prize's custodian is as far as anyone has gone; the
+review, not the announcement, is the event to wait for.}
+
+%------------------------------ 3. models & releases -------------------------
+\section{Model and product releases}
+
+\entry{DeepSeek-V4.1-Flash}{DeepSeek \textbullet\ open weights, MIT \textbullet\ 10 September}{https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash}{6}
+DeepSeek's new ``Causal Encoder--Decoder'' design: a 40-layer transformer
+split into a 20-layer causal encoder and a 20-layer decoder, with \textbf{552B} backbone
+parameters and just \textbf{8B active per token in prefill and 16B in decode}. Context is
+1M tokens, pre-training used 45T multimodal tokens, image input is native, and Compressed
+Sparse Attention 2 brings the global KV cache to 890 bytes per token, about a quarter of
+V4-Flash \srcref{7}. API pricing at peak is \$0.30 per million input tokens (cache miss),
+\$1.20 output and \$0.006 on cache hits, with off-peak rates at half; max output is 384K
+\srcref{8}. Self-reported at maximum reasoning effort: Terminal-Bench 2.1 \textbf{90.6\%}
+against 89.1\% for Claude Opus 5 and 88.8\% for GPT-5.6 Sol, DeepSWE v1.1 74.2\%
+(74.0\% / 73.0\%), but GPQA Diamond 90.9\% (93.4\% / 94.1\%), HLE 36.8\% (56.3\% / 44.5\%)
+and Terminal-Bench 4.0 31.2\% against Opus 5's 51.8\% \srcref{7}. DeepSeek is retiring
+V4-Pro: from 14 September its requests route to V4.1-Flash \srcref{6}.
+\why{A 16B-active open model that trades blows with closed frontier models on agentic
+coding at \$1.20 per million output tokens resets the baseline for self-hosted agents ---
+on the vendor's own numbers.}
+
+\entry{GPT-Live-1 in the API}{OpenAI \textbullet\ 10 September}{https://openai.com/index/introducing-gpt-live-1-in-the-api/}{11}
+The full-duplex voice model that has powered ChatGPT Voice since July is now an API product
+at \textbf{\$0.05 per minute} for the voice layer, with the backend reasoning model billed
+separately. It listens and speaks in one model, delegates reasoning and tool calls to a
+text model (GPT-6 Astra or a third-party model), supports telephony, and exposes ASR
+transcripts, keyword biasing and native turn detection. OpenAI reports a 30-point gain on
+Full Duplex Bench over GPT-Realtime-2.1 and first place on Tau3 when paired with Astra at
+medium effort --- both self-reported.
+\why{Pricing the voice layer per minute and the intelligence per token separates the two
+costs cleanly, which is how voice agents will now be budgeted.}
+
+\entry{Agents API (public beta)}{OpenAI \textbullet\ 10 September}{https://openai.com/index/introducing-the-agents-api/}{12}
+The harness behind Codex as a managed service: one call specifies task, model, tools and
+environment; OpenAI runs session orchestration, context compaction, recovery and subagent
+fan-out. Compute can be an OpenAI-hosted sandbox, your own VPC, or a partner (Blaxel,
+Cloudflare, Daytona, DigitalOcean, E2B, Modal, Oracle, Runloop, Vercel). No fee beyond
+tokens and tools; the harness is the open-source Codex harness. Customer figures on the
+page (a 60\% cost-per-case cut) are testimonials, not benchmarks.
+\why{The harness is now a product surface --- and the Anthropic report below shows the
+same pattern is what attackers build too.}
+
+
+%------------------------------ 4. research ----------------------------------
+\section{Research worth reading}
+
+\entry{NCP-ArchPreview: Next Concept Prediction}{Intern-NCP Team \textbullet\ arXiv:2609.10715}{https://arxiv.org/abs/2609.10715}{13}
+An 8.9B model trained on 5.73T Dolma-3 tokens that predicts discrete multi-token
+``concepts'' (product-quantized from hidden states) alongside the next token. The authors
+report reaching OLMo-3-7B's final pre-training loss using \textbf{51.3\%} of its tokens, a
+2.45-point average downstream gain and +5.99 on GSM8K. Submitted 9 September; the abstract
+does not state whether weights are released.
+\why{A halving of token budget at matched loss is the kind of claim worth reproducing
+before anyone changes a pre-training recipe on the strength of it.}
+
+\entry{An Open Recipe for IMO Gold: Training Nemotron for Olympiad Mathematics}{Moshkov, I. et al. \textbullet\ arXiv:2609.10712}{https://arxiv.org/abs/2609.10712}{14}
+Starting from Nemotron 3 Ultra, SFT-then-RL specialist checkpoints score \textbf{30 of 42}
+at IMO 2026 --- gold --- in natural language with no formal prover or tools. Released: two
+checkpoints, training data, training and inference code, the submitted solutions, and
+Nemotron-IMO-Bench, 200 new olympiad problems. Submitted 9 September.
+\why{Every prior IMO-gold result came from a closed lab; this is the first with the full
+recipe on the table.}
+
+\entry{ZGCM-1: a fully open 7B model for math and agentic search}{He, J. et al. \textbullet\ arXiv:2609.13356 \textbullet\ CC BY 4.0}{https://arxiv.org/abs/2609.13356}{15}
+A 7B model trained from scratch with a 256K context, interleaved gated sliding-window and
+full attention, and an FP8 Muon optimizer, reporting about \textbf{4.2$\times$} better
+time-to-loss at 16K pre-training. What sets it apart is the release: weights from
+pre-, mid- and post-training, intermediate checkpoints, training code, per-stage data and
+recipes, and the W\&B logs. Submitted 11 September.
+\why{Complete training logs and per-stage data are what make an ``open'' model
+auditable; almost no release at this scale includes them.}
+
+
+%------------------------------ 5. benchmarks & evals ------------------------
+\section{Benchmarks, evaluations and reproductions}
+
+One independent measurement and one benchmark repair this week. Artificial Analysis
+evaluated DeepSeek-V4.1-Flash on its own harness \srcref{9}, and the same index version
+scores the previous Flash \srcref{10}. Everything else in the table is self-reported.
+
+{\footnotesize
+\begin{tabularx}{\textwidth}{@{}l l r X@{}}
+\toprule
+\textbf{Benchmark} & \textbf{Model} & \textbf{Score} & \textbf{Who ran it} \\
+\midrule
+AA Intelligence Index v4.3 & DeepSeek-V4.1-Flash (max) & 40 & Artificial Analysis; V4 Flash 0731 scores 35 on the same index \srcref{9}\,\srcref{10} \\
+Terminal-Bench 2.1        & DeepSeek-V4.1-Flash & 90.6\% & DeepSeek; vs 89.1\% Opus 5, 88.8\% Sol \srcref{7} \\
+Terminal-Bench 4.0        & DeepSeek-V4.1-Flash & 31.2\% & DeepSeek; vs 51.8\% Opus 5, 39.9\% Sol \srcref{7} \\
+Full Duplex Bench         & GPT-Live-1 & +30 pts & OpenAI, over GPT-Realtime-2.1 \srcref{11} \\
+IMO 2026 (natural language) & Nemotron IMO checkpoints & 30/42 & Authors; artifacts released \srcref{14} \\
+\bottomrule
+\end{tabularx}}
+\vspace{0.4em}
+
+\textbf{SWE-Bench Pro Verified} \srcref{16} (arXiv:2609.08149; submitted 8 September,
+surfaced on 10 September) documents reward hacking on SWE-Bench Pro through leaked gold
+solutions and hidden evaluation information, plus misleading problem statements and
+badly scoped tests, and ships a repaired set with anti-leakage safeguards. The authors
+report that ``some models perform substantially worse than previously reported''. The
+abstract gives no per-model numbers and no artifact link, so treat it as a warning about the
+existing leaderboard rather than a new one.
+
+%------------------------------ 6. industry & policy -------------------------
+\section{Industry, funding and policy}
+
+\begin{itemize}
+  \item \textbf{Anthropic's ``Detecting and countering misuse of AI: September 2026''}
+        (10 September) covers December 2025 to August 2026 across seven domains: cyber,
+        surveillance, influence, conventional weapons, biological misuse, scams and fraud,
+        and illicit distillation. Named cases include a Russian-speaking operator linked to
+        Midnight Blizzard with 300{,}000+ identity records stolen from 20+ organisations;
+        a Chinese-speaking group with about fifty targets and ``a dozen possible zero day
+        findings in a single month''; and a France-based agency running about 70
+        fabricated news sites with 8{,}913 articles in about 20 languages. ``None of the misuse cases involved the use of Claude Fable
+        or Mythos-class models, with the exception of one illicit distillation case.''
+        \srcref{17}
+  \item \textbf{Paul Christiano joins the OpenAI Foundation Board} (9 September) and its
+        Safety and Security Committee under chair Zico Kolter, as a non-voting observer on
+        the OpenAI Group PBC board. He remains Senior Technical Advisor at NIST's CAISI and
+        will recuse himself from OpenAI-related matters and model evaluations there.
+        \srcref{18}
+  \item \textbf{Gulf compute:} Fortune reports (9 September), relaying Bloomberg, that
+        Humain is seeking a \$2.5 billion fund for Saudi data-centre expansion; the piece
+        puts Saudi capacity at 467 MW in Q1 2026 against a Humain target of 1.9 GW by 2030,
+        and CEO Tareq Amin's stated plan to list in Riyadh and New York by 2029. A
+        reported fundraising, not a closed one. \srcref{19}
+  \item \textbf{Missed by issues \#02 and \#03:} NVIDIA announced on 3 September that it
+        will acquire Hugging Face for \$12{,}930{,}300{,}000, pledging that the platform
+        ``will remain an open platform for the entire AI ecosystem'' and that ``NVIDIA
+        compute will not be required''. Outside this window; included because the brief has
+        not yet recorded it. \srcref{20}
+\end{itemize}
+
+%------------------------------ 7. what to watch -----------------------------
+\section{What to watch next week}
+\begin{itemize}
+  \item \textbf{Independent reading of the 166-page proof.} The Clay Institute has
+        promised updates \srcref{5}; the first named analyst to endorse or fault the
+        argument, rather than the Lean certificate, will decide how this is remembered.
+  \item \textbf{DeepSeek-V4.1-Flash on neutral harnesses.} Artificial Analysis has one
+        number so far \srcref{9}; third-party Terminal-Bench 4.0 and SWE-style runs will
+        show whether the 16B-active claim survives outside DeepSeek's own evaluation.
+  \item \textbf{Whether the SWE-Bench Pro repair changes any published score.} If the
+        leakage the authors describe is real \srcref{16}, vendor coding claims made on the
+        unrepaired set need re-running.
+\end{itemize}
+
+%------------------------------ 8. sources -----------------------------------
+\Needspace*{10\baselineskip}
+\section{Sources}
+{\footnotesize
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{\#} & \textbf{Reference} \\
+\midrule
+S1 & OpenAI. \emph{On the Navier--Stokes Millennium Prize Problem}. 8 September 2026, updated 10 September. \url{https://openai.com/index/navier-stokes-solution/} \\
+S2 & OpenAI. \emph{Finite time blowup for Navier--Stokes} (166 pp.). \url{https://cdn.openai.com/pdf/32d9f210-8b73-45e0-91bc-82a30aef8a9a/navier-stokes.pdf} \\
+S3 & Buckmaster, T. \emph{Statement}. 8 September 2026. \url{https://cims.nyu.edu/~tristanb/statement.pdf} \\
+S4 & Alp\"oge, L. and Buckmaster, T. \emph{Blowup for the Euler equations with smooth forcing} (112 pp.). \url{https://cims.nyu.edu/~tristanb/euler.pdf} \\
+S5 & Clay Mathematics Institute. \emph{Navier--Stokes announcement}. 11 September 2026. \url{https://www.claymath.org/news/navier-stokes-announcement/} \\
+S6 & DeepSeek. \emph{Introducing DeepSeek-V4.1-Flash}. 10 September 2026. \url{https://www.deepseek.com/en/news/deepseek-v4-1-flash/} \\
+S7 & DeepSeek. \emph{DeepSeek-V4.1-Flash model card}. Accessed 15 September 2026. \url{https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash} \\
+S8 & DeepSeek. \emph{Models \& Pricing}. Accessed 15 September 2026. \url{https://api-docs.deepseek.com/quick_start/pricing} \\
+S9 & Artificial Analysis. \emph{DeepSeek V4.1 Flash (max)}. Accessed 15 September 2026. \url{https://artificialanalysis.ai/models/deepseek-v4-1-flash} \\
+S10 & Artificial Analysis. \emph{DeepSeek V4 Flash 0731 (max)}. Accessed 15 September 2026. \url{https://artificialanalysis.ai/models/deepseek-v4-flash} \\
+S11 & OpenAI. \emph{Build more natural voice experiences with GPT-Live-1 in the API}. 10 September 2026. \url{https://openai.com/index/introducing-gpt-live-1-in-the-api/} \\
+S12 & OpenAI. \emph{Introducing the Agents API}. 10 September 2026. \url{https://openai.com/index/introducing-the-agents-api/} \\
+S13 & Intern-NCP Team. \emph{NCP-ArchPreview Technical Report}. arXiv:2609.10715, 9 September 2026. \url{https://arxiv.org/abs/2609.10715} \\
+S14 & Moshkov, I. et al. \emph{An Open Recipe for IMO Gold}. arXiv:2609.10712, 9 September 2026. \url{https://arxiv.org/abs/2609.10712} \\
+S15 & He, J. et al. \emph{ZGCM-1}. arXiv:2609.13356, 11 September 2026. \url{https://arxiv.org/abs/2609.13356} \\
+S16 & Zheng, P. et al. \emph{SWE-Bench Pro Verified}. arXiv:2609.08149, 8 September 2026. \url{https://arxiv.org/abs/2609.08149} \\
+S17 & Anthropic. \emph{Detecting and countering misuse of AI: September 2026}. 10 September 2026. \url{https://www.anthropic.com/threat-intelligence-report-september-2026} \\
+S18 & OpenAI. \emph{Paul Christiano joins OpenAI Foundation Board}. 9 September 2026. \url{https://openai.com/index/paul-christiano-joins-openai-foundation-board/} \\
+S19 & Fortune. \emph{Saudi AI giant races to fund data center expansion}. 9 September 2026. \url{https://fortune.com/2026/09/09/saudis-humain-turns-to-outside-investment-as-the-kingdom-reins-in-fiscal-spending/} \\
+S20 & NVIDIA. \emph{NVIDIA to Acquire Hugging Face}. 3 September 2026. \url{https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/} \\
+\bottomrule
+\end{tabularx}}
+
+\vspace{0.8em}
+{\footnotesize\color{brandgrey}
+Compiled \briefdate. Every figure in this brief was read from the linked primary
+source on that date. Corrections: \texttt{\briefauthor}.}
+
+\end{document}
